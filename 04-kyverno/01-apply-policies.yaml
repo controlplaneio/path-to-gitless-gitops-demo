@@ -1,6 +1,0 @@
-#!/bin/bash
-set -o pipefail
-set -o xtrace
-
-k apply -f image-verification-policy.yaml
-k apply -f verify-oci-repo.yaml
