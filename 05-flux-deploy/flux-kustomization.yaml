@@ -1,0 +1,15 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: a-simple-app
+  namespace: apps
+spec:
+  interval: 10m
+  serviceAccountName: flux
+  targetNamespace: apps
+  prune: true
+  sourceRef:
+    kind: OCIRepository
+    name: a-simple-app
+  path: ./

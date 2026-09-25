@@ -1,0 +1,6 @@
+FROM python:latest
+
+WORKDIR /app
+COPY index.html /app/index.html
+
+ENTRYPOINT ["python", "-m","http.server"]
