@@ -2,6 +2,10 @@
 set -o pipefail
 set -o xtrace
 
+export IMAGE_REPO="registry.iximiuz.com/oci-deploy"
+export TAG="v1.0"
+DIGEST=$(oras resolve $IMAGE_REPO:$TAG)
+
 echo "Create test attestation"
 echo "Deploying to test cluster..."
 kubectl apply -f deploy-oci.yaml
