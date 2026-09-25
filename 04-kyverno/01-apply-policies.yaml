@@ -1,0 +1,5 @@
+#!/bin/bash
+set -o pipefail
+
+k apply -f image-verification-policy.yaml
+k apply -f verify-oci-repo.yaml
