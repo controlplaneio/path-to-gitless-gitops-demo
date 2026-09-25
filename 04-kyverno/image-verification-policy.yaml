@@ -1,0 +1,42 @@
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-a-simple-app-signature
+  namespace: apps
+spec:
+  validationActions: [Deny]
+  validationConfigurations:
+    required: true
+    verifyDigest: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  matchImageReferences:
+    - glob: "registry.iximiuz.com/a-simple-app:*"
+  attestors:
+    - name: openbao
+      cosign:
+        key:
+          kms: "openbao://gitless-gitops"
+        ctlog:
+            insecureIgnoreTlog: true
+            insecureIgnoreSCT: true
+            url: "https://rekor.sigstore.dev" # Even though it gets ignored, has to be here
+  attestations:
+    - name: essentialSecurityTest 
+      intoto:
+        type: "https://in-toto.io/attestation/test-result/v0.1"
+
+  validations:
+    - expression: "images.containers.map(image, verifyImageSignatures(image, [attestors.openbao])).all(e, e > 0)"
+      message: "Image signature verification failed using OpenBao transit key 'gitless-gitops'."
+    - expression: >-
+        images.containers.map(image, verifyAttestationSignatures(image,
+          attestations.essentialSecurityTest, [attestors.openbao])).all(e, e > 0)
+      message: failed to verify attestation with openbao
+    - expression: >-
+        images.containers.map(image, extractPayload(image, attestations.essentialSecurityTest).predicate.result == 'PASSED').all(e, e)
+      message: essentialSecurityTest is not PASSED
