@@ -1,5 +1,6 @@
 #!/bin/bash
 set -o pipefail
+set -o xtrace
 
 # Use oras resolve to cleanly fetch the digest of the tag
 DIGEST=$(oras resolve ${IMAGE_REPO}:${TAG})
@@ -12,4 +13,4 @@ cosign sign \
   --yes \
   "${IMAGE_REPO}@${DIGEST}"
 
-cosign tree ${IMAGE_REPO}:${TAG}
+cosign tree ${IMAGE_REPO}@${DIGEST}

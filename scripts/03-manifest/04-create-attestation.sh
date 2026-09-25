@@ -1,5 +1,6 @@
 #!/bin/bash
 set -o pipefail
+set -o xtrace
 
 echo "3. Create test attestation"
 echo "3.1. Deploying to test cluster..."

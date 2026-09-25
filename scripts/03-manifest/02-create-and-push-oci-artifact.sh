@@ -1,5 +1,6 @@
 #!/bin/bash
 set -o pipefail
+set -o xtrace
 
 export IMAGE_REPO="registry.iximiuz.com/oci-deploy"
 export TAG="v1.0"
