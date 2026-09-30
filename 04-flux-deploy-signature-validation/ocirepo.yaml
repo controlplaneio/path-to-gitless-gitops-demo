@@ -6,7 +6,7 @@ metadata:
   namespace: apps
 spec:
   interval: 10m
-  url: oci://registry.iximiuz.com/oci-deploy
+  url: ${URL}
   ref:
     tag: v1.0
     digest: ${DIGEST}

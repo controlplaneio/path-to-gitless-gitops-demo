@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-IMAGE_REPO="registry.iximiuz.com/oci-deploy"
-TAG="v1.0"
-
-echo "Applying the OCIRepository and Flux Kustomization resources"
-
-# Use oras resolve to cleanly fetch the digest of the tag
-export DIGEST=$(oras resolve ${IMAGE_REPO}:${TAG})
+echo "SIGNED Deployment - Applying the OCIRepository and Flux Kustomization resources"
+export URL="${OCI_REGISTRY}/${MANIFEST_NAME}-signed"
+export DIGEST=$(oras resolve ${URL}:${TAG})
 envsubst < ocirepo.yaml | kubectl apply -f -
 kubectl apply -f flux-kustomization.yaml
+
+echo "UNSIGNED Deployment - Applying the OCIRepository and Flux Kustomization resources"
+export URL="${OCI_REGISTRY}/${MANIFEST_NAME}-unsigned"
+export DIGEST=$(oras resolve ${URL}:${TAG})
+envsubst < ocirepo.yaml | kubectl apply -f - # This will fail
