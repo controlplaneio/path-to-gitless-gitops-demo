@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: a-simple-app
+  name: ${ARTIFACT_NAME}
   namespace: apps
 spec:
   interval: 10m
