@@ -35,6 +35,10 @@ bash ./01-deploy-and-flux-verify.sh
 bash ./02-cleanup.sh
 ```
 
+> [!TIP]
+>
+> Note that this time, the error that you receive for unsigned OCI artifacts comes from Kyverno, even though the resources we deployed are the same as we did previously. This is because Kyverno intercepts the resources during admission control, whereas FluxCD performs the verification once the cluster admission control has cleared the resources to be deployed.
+
 ## References
 
 - [FluxCD Docs - Source controllers - OCI Repositories](https://fluxcd.io/flux/components/source/ocirepositories/#verification)
