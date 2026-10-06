@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+set -o xtrace
 
 URL="${OCI_REGISTRY}/${APP_NAME}-signed:${APP_TAG}"
 DIGEST=$(oras resolve "${URL}")

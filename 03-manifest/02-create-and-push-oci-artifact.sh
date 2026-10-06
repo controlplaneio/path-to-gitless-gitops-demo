@@ -1,5 +1,5 @@
 #!/bin/bash
-set -o pipefail
+set -euo pipefail
 set -o xtrace
 
 echo "Creating the OCI artifacts"

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+set -o xtrace
 
 echo "Cleaning up deployed OCIRepository and Kustomization resources"
 echo "Some deletions might fail depending on which steps you have executed before"

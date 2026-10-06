@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+set -o xtrace
 
 IMAGE="${OCI_REGISTRY}/${APP_NAME}-unsigned:${APP_TAG}"
 DIGEST=$(oras resolve registry.iximiuz.com/a-simple-app:v0.1.0)

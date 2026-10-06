@@ -1,5 +1,5 @@
 #!/bin/bash
-set -o pipefail
+set -euo pipefail
 set -o xtrace
 
 # Use oras resolve to cleanly fetch the digest of the tag

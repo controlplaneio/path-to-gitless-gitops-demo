@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+set -o xtrace
 
 echo "Applying the OCIRepository and Flux Kustomization resources - UNSIGNED Image UNSIGNED Manifest"
 export ARTIFACT_NAME="${MANIFEST_NAME}-unsigned-image-unsigned-manifest"

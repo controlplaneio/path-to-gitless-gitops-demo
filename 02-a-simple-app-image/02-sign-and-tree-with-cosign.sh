@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+set -o xtrace
 
 IMAGE="registry.iximiuz.com/a-simple-app"
 TAG="v0.1.0"
