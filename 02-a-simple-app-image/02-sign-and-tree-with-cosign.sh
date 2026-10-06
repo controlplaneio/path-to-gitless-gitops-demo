@@ -2,19 +2,20 @@
 set -euo pipefail
 set -o xtrace
 
-IMAGE="registry.iximiuz.com/a-simple-app"
-TAG="v0.1.0"
-DIGEST=$(oras resolve ${IMAGE}:${TAG})
+IMAGE_URL="{OCI_REGISTRY}/${APP_NAME}"
+DIGEST_SIGNED=$(oras resolve ${IMAGE_URL}-signed:${TAG})
 
 echo "Now we sign our image with cosign, then display it."
 cosign sign \
   --key openbao://gitless-gitops \
   --use-signing-config=false \
   --tlog-upload=false \
-  "${OCI_REGISTRY}/${APP_NAME}-signed:${APP_TAG}"
+  "${IMAGE_URL}-signed:${TAG}@${DIGEST_SIGNED}"
 
-cosign tree "${OCI_REGISTRY}/${APP_NAME}-signed:${APP_TAG}"
+cosign tree "${IMAGE_URL}-signed:${TAG}@${DIGEST_SIGNED}"
 
-echo "The unsigned image does not have any signatures"
+echo "Verify the unsigned image does not have any signatures using cosign tree"
 
-cosign tree "${OCI_REGISTRY}/${APP_NAME}-unsigned:${APP_TAG}"
+DIGEST_UNSIGNED=$(oras resolve ${IMAGE_URL}-unsigned:${TAG})
+
+cosign tree "${OCI_REGISTRY}/${APP_NAME}-unsigned:${APP_TAG}@${DIGEST_UNSIGNED}"
