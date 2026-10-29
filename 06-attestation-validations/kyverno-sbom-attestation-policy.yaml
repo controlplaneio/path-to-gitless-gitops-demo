@@ -1,0 +1,45 @@
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-a-simple-app-spdx-sbom
+  namespace: apps
+spec:
+  validationActions: [Deny]
+
+  validationConfigurations:
+    required: true
+    verifyDigest: true
+
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+
+  matchImageReferences:
+    - glob: "registry.iximiuz.com/a-simple-app-signed:*"
+
+  attestors:
+    - name: openbao
+      cosign:
+        key:
+          kms: "openbao://gitless-gitops"
+        ctlog:
+            insecureIgnoreTlog: true
+            insecureIgnoreSCT: true
+            url: "https://rekor.sigstore.dev" 
+
+  attestations:
+    - name: spdxSbom 
+      intoto:
+        type: "https://spdx.dev/Document/v3"
+
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyAttestationSignatures(image,
+          attestations.spdxSbom, [attestors.openbao])).all(e, e > 0)
+      message: "Failed to verify SPDX v3 SBOM attestation signature with OpenBao."
+    - expression: >-
+        images.containers.map(image, extractPayload(image, attestations.spdxSbom).predicate['@context'] == 'https://spdx.org/rdf/3.0/spdx-context.jsonld').all(e, e)
+      message: "The attached attestation is not a valid SPDX v3 JSON-LD document."

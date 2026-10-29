@@ -1,0 +1,50 @@
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-a-simple-app-vuln-attestation
+  namespace: apps
+spec:
+  validationActions: [Deny]
+
+  validationConfigurations:
+    required: true
+    verifyDigest: true
+
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+
+  matchImageReferences:
+    - glob: "registry.iximiuz.com/a-simple-app-signed:*"
+
+  attestors:
+    - name: openbao
+      cosign:
+        key:
+          kms: "openbao://gitless-gitops"
+        ctlog:
+            insecureIgnoreTlog: true
+            insecureIgnoreSCT: true
+            url: "https://rekor.sigstore.dev" 
+
+  attestations:
+    - name: vulnerabilityScan 
+      intoto:
+        type: "https://in-toto.io/attestation/vulns/0.2"
+
+  validations:
+    - expression: >-
+        images.containers.map(image, verifyAttestationSignatures(image,
+          attestations.vulnerabilityScan, [attestors.openbao])).all(e, e > 0)
+      message: "Failed to verify vulnerability attestation signature with OpenBao."
+    
+    - expression: >-
+        images.containers.map(image, 
+          extractPayload(image, attestations.vulnerabilityScan).predicate.scanner.result.Results.all(res, 
+            !has(res.Vulnerabilities) || res.Vulnerabilities.all(v, v.Severity != 'CRITICAL')
+          )
+        ).all(e, e)
+      message: "Admission denied: The attached vulnerability attestation contains CRITICAL vulnerabilities."

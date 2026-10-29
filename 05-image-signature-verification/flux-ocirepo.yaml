@@ -1,0 +1,16 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: ${ARTIFACT_NAME}
+  namespace: apps
+spec:
+  interval: 10m
+  url: ${URL}
+  ref:
+    tag: v1.0
+    digest: ${DIGEST}
+  verify:
+    provider: cosign
+    secretRef:
+      name: cosign-public-key

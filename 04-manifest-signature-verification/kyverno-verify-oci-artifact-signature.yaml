@@ -1,0 +1,47 @@
+---
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-oci-artifact-signature
+spec:
+  validationActions:
+    - Deny
+
+  validationConfigurations:
+    required: true
+    verifyDigest: true # We don't want tags, we only want digests
+
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - source.toolkit.fluxcd.io
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - ocirepositories
+
+  images:
+    - name: ociartifact
+      expression: "[object.spec.url.replace('oci://', '') + '@' + object.spec.ref.digest]"
+
+  matchImageReferences:
+    - glob: "registry.iximiuz.com/oci-deploy@*"
+
+  attestors:
+    - name: openbao
+      cosign:
+        key:
+          kms: "openbao://gitless-gitops"
+        ctlog:
+          insecureIgnoreTlog: true
+          insecureIgnoreSCT: true
+          url: "https://rekor.sigstore.dev" # Included even though it isn't used
+
+  validations:
+    - expression: "images.ociartifact.size() > 0"
+      message: "No OCI artifact was found in the OCIRepository."
+    - expression: "images.ociartifact.map(image, verifyImageSignatures(image, [attestors.openbao])).all(e, e > 0)"
+      message: "Image signature verification failed using OpenBao transit key 'gitless-gitops'."

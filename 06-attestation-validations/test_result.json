@@ -1,0 +1,18 @@
+{
+"result": "PASSED",
+"configuration": [
+  {
+    "name": "essential_security_test",
+    "downloadLocation": "https://github.com/example/example/blob/sha/.github/workflows/ci.yml",
+    "digest": {
+      "gitBlob": "sha"
+    }
+  }
+],
+"url": "https://github.com/example/example/actions/runs/832",
+"passedTests": [
+  "build (3.7, ubuntu-latest, py)"
+],
+"warnedTests": [],
+"failedTests": []
+}
