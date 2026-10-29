@@ -8,7 +8,8 @@ spec:
   interval: 10m
   url: ${URL}
   ref:
-    tag: v1.0
+    # tag is here for readability purposes, as FluxCD gives preference to the digest property https://fluxcd.io/flux/components/source/ocirepositories/#reference
+    tag: v1.0 
     digest: ${DIGEST}
   verify:
     provider: cosign
