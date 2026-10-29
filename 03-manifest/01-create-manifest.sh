@@ -3,7 +3,7 @@ set -euo pipefail
 set -o xtrace
 
 IMAGE="${OCI_REGISTRY}/${APP_NAME}-unsigned:${APP_TAG}"
-DIGEST=$(oras resolve registry.iximiuz.com/a-simple-app:v0.1.0)
+DIGEST=$(oras resolve "${IMAGE}")
 
 kubectl create deploy ${MANIFEST_NAME} \
   --image="${OCI_REGISTRY}/${APP_NAME}-signed:${APP_TAG}@${DIGEST}" \
