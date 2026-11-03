@@ -1,6 +1,14 @@
-# 03 - Creating a manifest for our simple App
+# 03 - Creating a manifest for our Simple App
 
-In this section, we will proceed with [creating a simple deployment](./01-create-manifest.sh) for our simple App. Because we will be showing how to control admission of both manifests and container images, there will be one version of the deployment for the signed image, and another one for the unsigned. Following on as we did with the simple App, we will [package it as an OCI artifact](./02-create-and-push-oci-artifact.sh) and create [a signed and an unsiged version](./03-sign-kube-manifest.sh). The end result will be 4 OCI artifacts containing the manifests. If you were to deploy them now to your cluster, you would observe that all 4 OCI artifacts can be deployed:
+In this section, we will [generate Kubernetes Deployment manifests](./01-create-manifest.sh) for our simple application. Because we want to demonstrate admission control for both Kubernetes manifests and container images, we will create two Deployment manifests: one referencing the signed container image, and another referencing the unsigned container image.
+
+Just as we did with the application image, we will [package each manifest as an OCI artifact](./02-create-and-push-oci-artifact.sh) and push both [signed and unsigned versions](./03-sign-kube-manifest.sh). This produces a total of four OCI artifacts:
+- Signed manifest referencing the signed application image
+- Unsigned manifest referencing the signed application image
+- Signed manifest referencing the unsigned application image
+- Unsigned manifest referencing the unsigned application image
+
+If you were to deploy them to your cluster right now (before applying any verification policies), all four OCI artifacts would be admitted:
 
 ![allowed artifacts](./allowed-artifacts.png)
 
