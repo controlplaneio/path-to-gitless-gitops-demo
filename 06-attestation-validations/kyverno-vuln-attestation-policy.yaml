@@ -33,7 +33,7 @@ spec:
   attestations:
     - name: vulnerabilityScan 
       intoto:
-        type: "https://in-toto.io/attestation/vulns/0.2"
+        type: "https://in-toto.io/attestation/vulns/v0.2"
 
   validations:
     - expression: >-

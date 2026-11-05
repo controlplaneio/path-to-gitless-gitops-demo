@@ -18,7 +18,7 @@ spec:
         resources: ["pods"]
 
   matchImageReferences:
-    - glob: "registry.iximiuz.com/a-simple-app:*"
+    - glob: "registry.iximiuz.com/a-simple-app-*:*"
 
   attestors:
     - name: openbao

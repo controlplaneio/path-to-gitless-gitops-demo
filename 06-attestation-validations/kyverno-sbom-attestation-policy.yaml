@@ -33,13 +33,13 @@ spec:
   attestations:
     - name: spdxSbom 
       intoto:
-        type: "https://spdx.dev/Document/v3"
+        type: "https://spdx.dev/Document"
 
   validations:
     - expression: >-
         images.containers.map(image, verifyAttestationSignatures(image,
           attestations.spdxSbom, [attestors.openbao])).all(e, e > 0)
-      message: "Failed to verify SPDX v3 SBOM attestation signature with OpenBao."
+      message: "Failed to verify SPDX SBOM attestation signature with OpenBao."
     - expression: >-
-        images.containers.map(image, extractPayload(image, attestations.spdxSbom).predicate['@context'] == 'https://spdx.org/rdf/3.0/spdx-context.jsonld').all(e, e)
-      message: "The attached attestation is not a valid SPDX v3 JSON-LD document."
+        images.containers.map(image, extractPayload(image, attestations.spdxSbom).predicate.spdxVersion.startsWith('SPDX-2.')).all(e, e)
+      message: "The attached attestation is not a valid SPDX v2 document."

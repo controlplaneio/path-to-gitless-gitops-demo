@@ -6,10 +6,10 @@ metadata:
   namespace: apps
 spec:
   interval: 10m
-  url: ${URL}
+  url: oci://${URL}
   ref:
-    # tag is here for readability purposes, as FluxCD gives preference to the digest property https://fluxcd.io/flux/components/source/ocirepositories/#reference
-    tag: v1.0 
+    # tag is here for readability purposes, as Flux CD gives preference to the digest property https://fluxcd.io/flux/components/source/ocirepositories/#reference
+    tag: ${MANIFEST_TAG}
     digest: ${DIGEST}
   verify:
     provider: cosign

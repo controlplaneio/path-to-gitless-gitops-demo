@@ -28,7 +28,7 @@ spec:
       expression: "[object.spec.url.replace('oci://', '') + '@' + object.spec.ref.digest]"
 
   matchImageReferences:
-    - glob: "registry.iximiuz.com/oci-deploy@*"
+    - glob: "registry.iximiuz.com/a-simple-oci-deployment-*@*"
 
   attestors:
     - name: openbao
