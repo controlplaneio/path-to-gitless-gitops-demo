@@ -7,6 +7,8 @@ DIGEST=$(oras resolve "${URL}")
 
 cosign attest \
   --key openbao://gitless-gitops \
+  --use-signing-config=false \
+  --tlog-upload=false \
   --predicate test_result.json \
   --type https://in-toto.io/attestation/test-result/v0.1 \
   "${URL}@${DIGEST}"

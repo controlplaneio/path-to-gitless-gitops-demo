@@ -9,6 +9,8 @@ trivy image --format spdx-json --output sbom.spdx.json ${URL}
 
 cosign attest \
   --key openbao://gitless-gitops \
+  --use-signing-config=false \
+  --tlog-upload=false \
   --type spdxjson \
   --predicate sbom.spdx.json \
   "${URL}@${DIGEST}"

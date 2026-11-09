@@ -10,12 +10,14 @@ echo "Sign OCI artifacts with digests ${SIGNED_DIGEST} and ${UNSIGNED_DIGEST}"
 
 cosign sign \
   --key openbao://gitless-gitops \
-  --yes \
+  --use-signing-config=false \
+  --tlog-upload=false \
   "${OCI_REGISTRY}/${MANIFEST_NAME}-signed-image-signed-manifest:${MANIFEST_TAG}@${SIGNED_DIGEST}"
 
 cosign sign \
   --key openbao://gitless-gitops \
-  --yes \
+  --use-signing-config=false \
+  --tlog-upload=false \
   "${OCI_REGISTRY}/${MANIFEST_NAME}-unsigned-image-signed-manifest:${MANIFEST_TAG}@${UNSIGNED_DIGEST}"
 
 echo "The signed manifest has the attestation attached to it"
