@@ -18,4 +18,4 @@ echo "Verify the unsigned image does not have any signatures using cosign tree"
 
 DIGEST_UNSIGNED=$(oras resolve "${IMAGE_URL}-unsigned:${APP_TAG}")
 
-cosign tree "${OCI_REGISTRY}/${APP_NAME}-unsigned:${APP_TAG}@${DIGEST_UNSIGNED}"
+cosign tree "${IMAGE_URL}-unsigned:${APP_TAG}@${DIGEST_UNSIGNED}"
