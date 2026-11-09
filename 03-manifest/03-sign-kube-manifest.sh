@@ -20,8 +20,10 @@ cosign sign \
   --tlog-upload=false \
   "${OCI_REGISTRY}/${MANIFEST_NAME}-unsigned-image-signed-manifest:${MANIFEST_TAG}@${UNSIGNED_DIGEST}"
 
-echo "The signed manifest has the attestation attached to it"
+echo "The signed manifests have a signature attached to them"
 cosign tree "${OCI_REGISTRY}/${MANIFEST_NAME}-signed-image-signed-manifest:${MANIFEST_TAG}@${SIGNED_DIGEST}"
-
-echo "The unsigned manifest does not have an attestation attached to it"
 cosign tree "${OCI_REGISTRY}/${MANIFEST_NAME}-unsigned-image-signed-manifest:${MANIFEST_TAG}@${UNSIGNED_DIGEST}"
+
+echo "The unsigned manifests do not have a signature attached to them"
+cosign tree "${OCI_REGISTRY}/${MANIFEST_NAME}-signed-image-unsigned-manifest:${MANIFEST_TAG}@${SIGNED_DIGEST}"
+cosign tree "${OCI_REGISTRY}/${MANIFEST_NAME}-unsigned-image-unsigned-manifest:${MANIFEST_TAG}@${UNSIGNED_DIGEST}"
