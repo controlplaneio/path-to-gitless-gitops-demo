@@ -11,8 +11,7 @@ cosign attest \
   --key openbao://gitless-gitops \
   --use-signing-config=false \
   --tlog-upload=false \
-  --type custom \
-  --predicate-type https://in-toto.io/attestation/vulns/v0.2 \
+  --type https://in-toto.io/attestation/vulns/v0.2 \
   --predicate vuln.json \
   "${URL}@${DIGEST}"
 

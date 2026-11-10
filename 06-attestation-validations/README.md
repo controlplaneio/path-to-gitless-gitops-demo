@@ -41,6 +41,7 @@ bash ./01-cleanup.sh                            # Clean resources from previous 
 bash ./05-kyverno-sbom-attestation-policy.sh    # Deploy SBOM Kyverno policy
 bash ./03-deploy-workload.sh                    # Deploy our workload (will fail)
 bash ./06-sbom-attestation.sh                   # Attest the workload
+bash ./01-cleanup.sh                            # Clean resources to start with a clean slate
 bash ./03-deploy-workload.sh                    # Deploy our workload (will succeed)
 ```
 
@@ -59,6 +60,7 @@ bash ./01-cleanup.sh                            # Clean resources from previous 
 bash ./07-kyverno-vuln-attestation-policy.sh    # Deploy Vuln Kyverno policy
 bash ./03-deploy-workload.sh                    # Deploy our workload (will fail)
 bash ./08-vuln-attestation.sh                   # Attest the workload
+bash ./01-cleanup.sh                            # Clean resources to start with a clean slate
 bash ./03-deploy-workload.sh                    # Deploy our workload (will succeed)
 ```
 
