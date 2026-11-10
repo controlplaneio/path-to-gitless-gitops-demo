@@ -5,12 +5,12 @@ set -o xtrace
 IMAGE="${OCI_REGISTRY}/${APP_NAME}-unsigned:${APP_TAG}"
 DIGEST=$(oras resolve "${IMAGE}")
 
-kubectl create deploy ${MANIFEST_NAME} \
+kubectl create deploy "${MANIFEST_NAME}-signed-image" \
   --image="${OCI_REGISTRY}/${APP_NAME}-signed:${APP_TAG}@${DIGEST}" \
   --dry-run=client \
   -o yaml > ${MANIFEST_NAME}-signed-image.yaml
 
-kubectl create deploy ${MANIFEST_NAME} \
+kubectl create deploy "${MANIFEST_NAME}-unsigned-image" \
   --image="${OCI_REGISTRY}/${APP_NAME}-unsigned:${APP_TAG}@${DIGEST}" \
   --dry-run=client \
   -o yaml > ${MANIFEST_NAME}-unsigned-image.yaml
