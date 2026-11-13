@@ -1,0 +1,17 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: ${ARTIFACT_NAME}
+  namespace: apps
+spec:
+  interval: 10m
+  url: oci://${URL}
+  ref:
+    # tag is here for readability purposes, as Flux CD gives preference to the digest property https://fluxcd.io/flux/components/source/ocirepositories/#reference
+    tag: ${MANIFEST_TAG}
+    digest: ${DIGEST}
+  verify:
+    provider: cosign
+    secretRef:
+      name: cosign-public-key
