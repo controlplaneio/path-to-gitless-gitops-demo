@@ -17,7 +17,13 @@ Run this section with the following commands:
 ```sh
 bash ./01-deploy-kyverno-policy.sh
 bash ./02-deploy.sh
+flux get kustomizations -n apps
 ```
+
+You can also inspect the reconciliation status in the **Flux UI** tab.
+The two unsigned manifests are rejected immediately during `kubectl apply`.
+Meanwhile, `unsigned-image-signed-manifest` fails `Kustomization` reconciliation when Kyverno blocks its unsigned image.
+Only `signed-image-signed-manifest` becomes `Ready`.
 
 ## References
 

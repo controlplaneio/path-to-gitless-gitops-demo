@@ -11,6 +11,11 @@ All of the policies in this section follow the same pattern. Their key component
 - The `.spec.attestations` block defines the attestation predicate type to verify.
 - The `.spec.validations` block defines custom CEL expressions that inspect specific fields inside the verified attestation payload.
 
+In each exercise below, `03-deploy-workload.sh` submits the signed `OCIRepository` and `Kustomization` to Flux.
+Check `flux get kustomizations -n apps` (or the **Flux UI** tab) after each deploy step.
+Before attesting, reconciliation fails with Kyverno's admission error.
+After attaching the attestation in the registry, reconciliation succeeds without rebuilding the image or manifest.
+
 > [!TIP]
 >
 > In-toto predicate types are identified by URLs. Note that these URLs do not necessarily resolve to live web pages; instead, [they act as unique URI identifiers](https://github.com/in-toto/attestation/blob/main/spec/v1/statement.md) for the predicate schema.
@@ -24,10 +29,12 @@ To see the Kyverno policy in action, run the commands in the following order:
 ```sh
 bash ./01-cleanup.sh                            # Clean resources from previous sections
 bash ./02-kyverno-test-attestation-policy.sh    # Deploy Kyverno policy to validate test attestation
-bash ./03-deploy-workload.sh                    # Deploy our unattested workload (will fail)
+bash ./03-deploy-workload.sh                    # Apply Flux resources for unattested workload
+flux get kustomizations -n apps                 # Reconciliation fails (Kyverno denies admission)
 bash ./04-test-attestation.sh                   # Attest the workload
 bash ./01-cleanup.sh                            # Clean resources to start with a clean slate
-bash ./03-deploy-workload.sh                    # Deploy our attested workload (will succeed)
+bash ./03-deploy-workload.sh                    # Apply Flux resources for attested workload
+flux get kustomizations -n apps                 # Reconciliation succeeds
 ```
 
 ## SBOM
@@ -39,10 +46,12 @@ To see the Kyverno policy in action, run the commands in the following order:
 ```sh
 bash ./01-cleanup.sh                            # Clean resources from previous sections
 bash ./05-kyverno-sbom-attestation-policy.sh    # Deploy SBOM Kyverno policy
-bash ./03-deploy-workload.sh                    # Deploy our workload (will fail)
+bash ./03-deploy-workload.sh                    # Apply Flux resources for unattested workload
+flux get kustomizations -n apps                 # Reconciliation fails (Kyverno denies admission)
 bash ./06-sbom-attestation.sh                   # Attest the workload
 bash ./01-cleanup.sh                            # Clean resources to start with a clean slate
-bash ./03-deploy-workload.sh                    # Deploy our workload (will succeed)
+bash ./03-deploy-workload.sh                    # Apply Flux resources for attested workload
+flux get kustomizations -n apps                 # Reconciliation succeeds
 ```
 
 > [!TIP]
@@ -58,10 +67,12 @@ To see the Kyverno policy in action, run the commands in the following order:
 ```sh
 bash ./01-cleanup.sh                            # Clean resources from previous sections
 bash ./07-kyverno-vuln-attestation-policy.sh    # Deploy Vuln Kyverno policy
-bash ./03-deploy-workload.sh                    # Deploy our workload (will fail)
+bash ./03-deploy-workload.sh                    # Apply Flux resources for unattested workload
+flux get kustomizations -n apps                 # Reconciliation fails (Kyverno denies admission)
 bash ./08-vuln-attestation.sh                   # Attest the workload
 bash ./01-cleanup.sh                            # Clean resources to start with a clean slate
-bash ./03-deploy-workload.sh                    # Deploy our workload (will succeed)
+bash ./03-deploy-workload.sh                    # Apply Flux resources for attested workload
+flux get kustomizations -n apps                 # Reconciliation succeeds
 ```
 
 ## Custom

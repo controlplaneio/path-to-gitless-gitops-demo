@@ -6,6 +6,11 @@ Once the controls in this section are applied, signed OCI manifest artifacts wil
 
 ![allowed artifacts](./allowed-artifacts.png)
 
+> [!NOTE]
+>
+> In production Gitless GitOps, Flux reconciles `OCIRepository`, `Kustomization`, and policy resources from a signed root OCI artifact (`flux-system/config`).
+> In Sections `04`–`06`, we apply `OCIRepository` and `Kustomization` via `kubectl` as a test harness to evaluate all four combinations side by side.
+
 > [!WARNING]
 >
 > Do not delete the Kyverno policies after finishing this section. We will build upon them as a stepping stone in the next section.
@@ -14,8 +19,16 @@ Once the controls in this section are applied, signed OCI manifest artifacts wil
 
 Flux CD provides a custom resource called `OCIRepository`. Its `.spec.verify` block allows specifying a public key to verify the cryptographic signature of the target OCI artifact. In [our example](./flux-ocirepo.yaml), it references the Kubernetes Secret containing the public key we created in [the first section](../01-openbao-transit-engine/). Flux CD automatically validates the signature before reconciling the artifact, rejecting any unsigned OCI artifacts.
 
+Deploy all four candidates and inspect their verification status (both in the CLI output and in the **Flux UI** tab):
+
 ```sh
 bash ./01-deploy.sh
+flux get sources oci -n apps
+```
+
+Once you have confirmed that only the two signed manifest artifacts become `Ready`, clean up the test resources:
+
+```sh
 bash ./02-cleanup.sh
 ```
 
@@ -34,6 +47,12 @@ Kyverno can also verify the signature of the `OCIRepository` artifact at admissi
 ```sh
 bash ./03-kyverno-policies.sh         # Apply Kyverno policies first this time
 bash ./01-deploy.sh
+```
+
+Inspect the admission rejections in the terminal and check `flux get sources oci -n apps` (or the **Flux UI** tab).
+Only the two signed `OCIRepository` resources exist in the cluster; clean them up when ready:
+
+```sh
 bash ./02-cleanup.sh
 ```
 
