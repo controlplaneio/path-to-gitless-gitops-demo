@@ -6,8 +6,9 @@ echo "Applying the OCIRepository and Flux Kustomization resources - UNSIGNED Ima
 export ARTIFACT_NAME="${MANIFEST_NAME}-unsigned-image-unsigned-manifest"
 export URL="${OCI_REGISTRY}/${ARTIFACT_NAME}"
 export DIGEST=$(oras resolve "${URL}:${MANIFEST_TAG}")
-envsubst < flux-ocirepo.yaml | kubectl apply -f - || echo "Admission denied by Kyverno (expected)"
-envsubst < flux-kustomization.yaml | kubectl apply -f -
+if envsubst < flux-ocirepo.yaml | kubectl apply -f -; then
+  envsubst < flux-kustomization.yaml | kubectl apply -f -
+fi
 
 echo "Applying the OCIRepository and Flux Kustomization resources - UNSIGNED Image SIGNED Manifest"
 export ARTIFACT_NAME="${MANIFEST_NAME}-unsigned-image-signed-manifest"
@@ -20,8 +21,9 @@ echo "Applying the OCIRepository and Flux Kustomization resources - SIGNED Image
 export ARTIFACT_NAME="${MANIFEST_NAME}-signed-image-unsigned-manifest"
 export URL="${OCI_REGISTRY}/${ARTIFACT_NAME}"
 export DIGEST=$(oras resolve "${URL}:${MANIFEST_TAG}")
-envsubst < flux-ocirepo.yaml | kubectl apply -f - || echo "Admission denied by Kyverno (expected)"
-envsubst < flux-kustomization.yaml | kubectl apply -f -
+if envsubst < flux-ocirepo.yaml | kubectl apply -f -; then
+  envsubst < flux-kustomization.yaml | kubectl apply -f -
+fi
 
 echo "Applying the OCIRepository and Flux Kustomization resources - SIGNED Image SIGNED Manifest"
 export ARTIFACT_NAME="${MANIFEST_NAME}-signed-image-signed-manifest"
