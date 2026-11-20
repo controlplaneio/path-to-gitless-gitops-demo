@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
 set -o xtrace
 
 URL="${OCI_REGISTRY}/${APP_NAME}-signed:${APP_TAG}"
@@ -13,4 +14,4 @@ cosign attest \
   --type https://in-toto.io/attestation/test-result/v0.1 \
   "${URL}@${DIGEST}"
 
-cosign tree ${URL}@${DIGEST}
+cosign tree "${URL}@${DIGEST}"

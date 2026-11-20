@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-set -o xtrace
 
 BLOCK_START="# --- Gitless GitOps Demo Variables ---"
 BLOCK_END="# --- End Gitless GitOps Demo Variables ---"

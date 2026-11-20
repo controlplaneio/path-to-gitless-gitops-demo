@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
 set -o xtrace
 
 SIGNED_IMAGE_DIGEST=$(oras resolve "${OCI_REGISTRY}/${APP_NAME}-signed:${APP_TAG}")

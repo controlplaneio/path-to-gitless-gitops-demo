@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
 set -o xtrace
 
-# Enable the transit engine, and create a key at gitless-gitops
-bao secrets enable transit
+# Enable the transit engine if not already enabled, and create a key at gitless-gitops
+bao secrets list | grep -q '^transit/' || bao secrets enable transit
+rm -f ./cosign.pub
 cosign generate-key-pair --kms openbao://gitless-gitops

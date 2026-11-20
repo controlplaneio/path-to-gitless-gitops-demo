@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
 set -o xtrace
 
 echo "Cleaning up deployed OCIRepository and Kustomization resources"
