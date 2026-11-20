@@ -2,16 +2,16 @@
 set -euo pipefail
 set -o xtrace
 
-IMAGE="${OCI_REGISTRY}/${APP_NAME}-unsigned:${APP_TAG}"
-DIGEST=$(oras resolve "${IMAGE}")
+SIGNED_IMAGE_DIGEST=$(oras resolve "${OCI_REGISTRY}/${APP_NAME}-signed:${APP_TAG}")
+UNSIGNED_IMAGE_DIGEST=$(oras resolve "${OCI_REGISTRY}/${APP_NAME}-unsigned:${APP_TAG}")
 
 kubectl create deploy "${MANIFEST_NAME}-signed-image" \
-  --image="${OCI_REGISTRY}/${APP_NAME}-signed:${APP_TAG}@${DIGEST}" \
+  --image="${OCI_REGISTRY}/${APP_NAME}-signed:${APP_TAG}@${SIGNED_IMAGE_DIGEST}" \
   --dry-run=client \
-  -o yaml > ${MANIFEST_NAME}-signed-image.yaml
+  -o yaml > "${MANIFEST_NAME}-signed-image.yaml"
 
 kubectl create deploy "${MANIFEST_NAME}-unsigned-image" \
-  --image="${OCI_REGISTRY}/${APP_NAME}-unsigned:${APP_TAG}@${DIGEST}" \
+  --image="${OCI_REGISTRY}/${APP_NAME}-unsigned:${APP_TAG}@${UNSIGNED_IMAGE_DIGEST}" \
   --dry-run=client \
-  -o yaml > ${MANIFEST_NAME}-unsigned-image.yaml
+  -o yaml > "${MANIFEST_NAME}-unsigned-image.yaml"
 
