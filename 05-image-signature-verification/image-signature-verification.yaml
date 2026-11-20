@@ -35,7 +35,6 @@ spec:
         ctlog:
           insecureIgnoreTlog: true
           insecureIgnoreSCT: true
-          url: "https://rekor.sigstore.dev" # Even though it gets ignored, has to be here
 
   validations:
     - expression: "variables.allImages.map(image, verifyImageSignatures(image, [attestors.openbao])).all(e, e > 0)"

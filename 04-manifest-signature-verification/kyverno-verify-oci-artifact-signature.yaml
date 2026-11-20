@@ -46,7 +46,6 @@ spec:
         ctlog:
           insecureIgnoreTlog: true
           insecureIgnoreSCT: true
-          url: "https://rekor.sigstore.dev" # Included even though it isn't used
 
   validations:
     - expression: "images.ociartifact.size() > 0"

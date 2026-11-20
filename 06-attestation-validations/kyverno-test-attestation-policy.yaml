@@ -35,7 +35,6 @@ spec:
         ctlog:
           insecureIgnoreTlog: true
           insecureIgnoreSCT: true
-          url: "https://rekor.sigstore.dev" # Even though it gets ignored, it has to be here
 
   attestations:
     - name: essentialSecurityTest

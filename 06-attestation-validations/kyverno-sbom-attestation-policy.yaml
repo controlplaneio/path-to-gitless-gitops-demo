@@ -35,7 +35,6 @@ spec:
         ctlog:
           insecureIgnoreTlog: true
           insecureIgnoreSCT: true
-          url: "https://rekor.sigstore.dev"
 
   attestations:
     - name: spdxSbom

@@ -10,6 +10,11 @@ bash ./01-build-and-push.sh
 bash ./02-sign-and-tree-with-cosign.sh
 ```
 
+> [!NOTE]
+>
+> Cosign v3 prints a deprecation notice for `--use-signing-config=false` and `--tlog-upload=false`.
+> Those flags remain the standard way to sign offline without Rekor in Cosign v3.1 until its dedicated offline flag lands.
+
 References:
 
 - [Podman Docs - Build command](https://docs.podman.io/en/v5.5.2/markdown/podman-build.1.html)
