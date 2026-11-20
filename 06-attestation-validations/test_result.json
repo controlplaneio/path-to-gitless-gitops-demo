@@ -1,18 +1,18 @@
 {
-"result": "PASSED",
-"configuration": [
-  {
-    "name": "security_test",
-    "downloadLocation": "https://github.com/example/example/blob/sha/.github/workflows/ci.yml",
-    "digest": {
-      "gitBlob": "sha"
+  "result": "PASSED",
+  "configuration": [
+    {
+      "name": "security_test",
+      "downloadLocation": "https://github.com/example/example/blob/d20ace7968ba43c0219f62d71334c1095bab1602/.github/workflows/ci.yml",
+      "digest": {
+        "gitBlob": "ebe4add40f63c3c98bc9b32ff1e736f04120b023"
+      }
     }
-  }
-],
-"url": "https://github.com/example/example/actions/runs/832",
-"passedTests": [
-  "build (3.7, ubuntu-latest, py)"
-],
-"warnedTests": [],
-"failedTests": []
+  ],
+  "url": "https://github.com/example/example/actions/runs/832",
+  "passedTests": [
+    "build (3.7, ubuntu-latest, py)"
+  ],
+  "warnedTests": [],
+  "failedTests": []
 }

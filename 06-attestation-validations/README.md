@@ -22,7 +22,11 @@ After attaching the attestation in the registry, reconciliation succeeds without
 
 ## Test Attestation
 
-The first attestation type we will look at is the test result predicate. This is a predefined [in-toto predicate](https://in-toto.io/attestation/test-result/v0.1) natively supported by both Cosign and Kyverno. To use it, we provide [a predicate payload](./test_result.json)—a JSON file structured according to the specification (in a real CI/CD pipeline, your test runner would generate this dynamically). Once the predicate file is ready, we can [cryptographically attest and attach it using Cosign](./04-test-attestation.sh).
+The first attestation type we will look at is the test result predicate.
+This is a vetted [in-toto predicate specification](https://in-toto.io/attestation/test-result/v0.1) that Cosign and Kyverno reference by its predicate URI.
+To use it, we provide [a predicate payload](./test_result.json) structured according to the specification.
+In a real CI/CD pipeline, your test runner generates this file dynamically.
+Once the predicate file is ready, we can [cryptographically attest and attach it using Cosign](./04-test-attestation.sh).
 
 To see the Kyverno policy in action, run the commands in the following order:
 
@@ -39,7 +43,7 @@ flux get kustomizations -n apps                 # Reconciliation succeeds
 
 ## SBOM
 
-Next, we will demonstrate how to verify a Software Bill of Materials (SBOM) using attestations. In-toto supports both [SPDX](https://github.com/in-toto/attestation/blob/main/spec/predicates/spdx3.md) and [CycloneDX](https://github.com/in-toto/attestation/blob/main/spec/predicates/cyclonedx.md) formats. In our example, we use SPDX and [run Trivy to generate and attest the SBOM](./06-sbom-attestation.sh).
+Next, we will demonstrate how to verify a Software Bill of Materials (SBOM) using attestations. In-toto supports both [SPDX](https://github.com/in-toto/attestation/blob/main/spec/predicates/spdx2.md) and [CycloneDX](https://github.com/in-toto/attestation/blob/main/spec/predicates/cyclonedx.md) formats. In our example, we use SPDX and [run Trivy to generate and attest the SBOM](./06-sbom-attestation.sh).
 
 To see the Kyverno policy in action, run the commands in the following order:
 
@@ -60,7 +64,9 @@ flux get kustomizations -n apps                 # Reconciliation succeeds
 
 ## Vulnerabilities
 
-Most organizations enforce strict policies around which CVEs or severity levels are allowed in production. A [vulnerability scan attestation](https://github.com/in-toto/attestation/blob/main/spec/predicates/vulns_02.md) allows admission controllers to verify whether an image complies with vulnerability thresholds before deployment. You simply [generate the vulnerability report](./08-vuln-attestation.sh) using a scanner like Trivy and attach it to the image as a signed attestation.
+Most organizations enforce strict policies around which CVEs or severity levels are allowed in production.
+A [Cosign vulnerability scan attestation](https://github.com/sigstore/cosign/blob/v3.1.4/specs/COSIGN_VULN_ATTESTATION_SPEC.md) lets admission controllers verify that an image meets severity thresholds before deployment.
+You simply [generate the vulnerability report](./08-vuln-attestation.sh) with Trivy (`--format cosign-vuln`) and attach it via `cosign attest --type vuln`.
 
 To see the Kyverno policy in action, run the commands in the following order:
 
@@ -81,8 +87,9 @@ Cosign also supports [custom in-toto predicates](https://github.com/sigstore/cos
 
 ## References
 
-- [In-toto Attestation - Predicates - Spec - SPDX](https://github.com/in-toto/attestation/blob/main/spec/predicates/spdx3.md)
+- [In-toto Attestation - Predicates - Spec - SPDX v2](https://github.com/in-toto/attestation/blob/main/spec/predicates/spdx2.md)
 - [In-toto Attestation - Predicates - Spec - Test Result](https://github.com/in-toto/attestation/blob/main/spec/predicates/test-result.md)
-- [In-toto Attestation - Predicates - Spec - Vulnerabilities](https://github.com/in-toto/attestation/blob/main/spec/predicates/vulns_02.md)
+- [Cosign - Vulnerability Attestation Spec](https://github.com/sigstore/cosign/blob/v3.1.4/specs/COSIGN_VULN_ATTESTATION_SPEC.md)
+- [In-toto Attestation - Predicates - Spec - Vulnerabilities v0.2](https://github.com/in-toto/attestation/blob/main/spec/predicates/vulns_02.md)
 - [Kyverno Docs - Policy Types - ImageValidatingPolicy](https://kyverno.io/docs/policy-types/image-validating-policy/)
 - [Trivy Docs - SBOM Scanning](https://trivy.dev/docs/latest/target/sbom/)

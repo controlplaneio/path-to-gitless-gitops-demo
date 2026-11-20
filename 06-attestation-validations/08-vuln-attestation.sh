@@ -5,14 +5,14 @@ set -o xtrace
 URL="${OCI_REGISTRY}/${APP_NAME}-signed:${APP_TAG}"
 DIGEST=$(oras resolve "${URL}")
 
-trivy image --format cosign-vuln --output vuln.json ${URL}
+trivy image --format cosign-vuln --output vuln.json "${URL}"
 
 cosign attest \
   --key openbao://gitless-gitops \
   --use-signing-config=false \
   --tlog-upload=false \
-  --type https://in-toto.io/attestation/vulns/v0.2 \
+  --type vuln \
   --predicate vuln.json \
   "${URL}@${DIGEST}"
 
-cosign tree ${URL}@${DIGEST}
+cosign tree "${URL}@${DIGEST}"

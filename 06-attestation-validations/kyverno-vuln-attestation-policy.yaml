@@ -40,7 +40,7 @@ spec:
   attestations:
     - name: vulnerabilityScan
       intoto:
-        type: "https://in-toto.io/attestation/vulns/v0.2"
+        type: "https://cosign.sigstore.dev/attestation/vuln/v1"
 
   validations:
     - expression: >-
@@ -50,6 +50,7 @@ spec:
 
     - expression: >-
         variables.allImages.map(image,
+          !has(extractPayload(image, attestations.vulnerabilityScan).predicate.scanner.result.Results) ||
           extractPayload(image, attestations.vulnerabilityScan).predicate.scanner.result.Results.all(res,
             !has(res.Vulnerabilities) || res.Vulnerabilities.all(v, v.Severity != 'CRITICAL')
           )
