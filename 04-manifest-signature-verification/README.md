@@ -2,7 +2,10 @@
 
 In this section, we will demonstrate how to leverage Flux CD and Kyverno to verify the signatures of the OCI artifacts we intend to deploy. Both approaches achieve the same goal through different mechanisms.
 
-Once the controls in this section are applied, signed OCI manifest artifacts will be allowed while unsigned OCI manifest artifacts will be rejected. However, this section does not yet validate the signature of the underlying container image referenced inside the manifest. This means that an unsigned application image packaged inside a signed OCI manifest artifact can still be deployed. At the end of this section, our controls will look as follows:
+With these controls active, signed OCI manifest artifacts are allowed and unsigned ones are rejected.
+This section does not yet verify the container image referenced inside the manifest.
+As a result, an unsigned image packaged inside a signed manifest can still deploy.
+At the end of this section, our controls look as follows:
 
 ![allowed artifacts](./allowed-artifacts.png)
 
@@ -59,7 +62,9 @@ bash ./02-cleanup.sh
 
 > [!TIP]
 >
-> Notice that this time, the rejection error for unsigned OCI artifacts comes directly from Kyverno during admission control (`kubectl apply`), even though we are applying the exact same resources as before. Whereas Kyverno blocks the `OCIRepository` resource from ever entering etcd, Flux CD performs its verification asynchronously during the reconciliation loop after admission control has already accepted the resource.
+> Notice that the rejection error for unsigned OCI artifacts now comes directly from Kyverno during `kubectl apply`.
+> Kyverno blocks the `OCIRepository` resource synchronously before it ever enters etcd.
+> Flux CD, by contrast, verifies signatures asynchronously during reconciliation after admission control has accepted the resource.
 
 ## References
 

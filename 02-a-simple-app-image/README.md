@@ -1,6 +1,7 @@
 # 02 - Creating a Simple App Image
 
-With the signing key created, we can now build and push a [simple application image](./01-build-and-push.sh). This script pushes two tags of the application image: one that we [will sign with Cosign](./02-sign-and-tree-with-cosign.sh), and one that we will leave unsigned.
+With the signing key created, we can now build and push a [simple application image](./01-build-and-push.sh).
+This script pushes two copies of the image to separate repositories: one that we [will sign with Cosign](./02-sign-and-tree-with-cosign.sh), and one that we leave unsigned.
 
 You can run this entire section as follows:
 

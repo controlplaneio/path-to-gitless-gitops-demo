@@ -4,7 +4,8 @@
 >
 > This section assumes the Kyverno policies for validating manifest and image signatures from the previous sections are still deployed.
 
-Now that we have cryptographically proven our workloads were created by a trusted party, we can leverage attestations to verify that they meet our quality and security standards before admission.
+We have now cryptographically proven that our workloads were created by a trusted party.
+Next, we will use attestations to verify that they meet our quality and security standards before admission.
 
 All of the policies in this section follow the same pattern. Their key components are:
 
@@ -60,7 +61,9 @@ flux get kustomizations -n apps                 # Reconciliation succeeds
 
 > [!TIP]
 >
-> Inspect the generated SBOM attestation! Notice that instead of merely linking to an external file, the entire SBOM payload is embedded directly inside the attestation statement. This allows you to write granular CEL expressions in Kyverno that inspect specific packages, versions, or licenses within the SBOM at admission time.
+> Inspect the generated SBOM attestation!
+> Instead of merely linking to an external file, the entire SBOM payload is embedded directly inside the attestation statement.
+> You can write CEL expressions in Kyverno to inspect specific packages, versions, or licenses at admission time.
 
 ## Vulnerabilities
 

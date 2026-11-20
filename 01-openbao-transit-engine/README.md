@@ -26,4 +26,4 @@ References:
 
 - [Flux CD - Source Controllers - OCI Repositories](https://fluxcd.io/flux/components/source/ocirepositories/)
 - [OpenBao - Transit Secrets Engine](https://openbao.org/docs/secrets/transit/)
-- [Kyverno - Verify Image Rules](https://kyverno.io/docs/policy-types/cluster-policy/verify-images/overview/)
+- [Kyverno - ImageValidatingPolicy](https://kyverno.io/docs/policy-types/image-validating-policy/)

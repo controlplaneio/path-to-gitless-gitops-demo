@@ -1,6 +1,8 @@
 # 05 - Image signature verification
 
-In the previous section, we validated the signature of the OCI artifact containing our Kubernetes deployment manifest using both Flux CD and Kyverno. However, that step only verified the manifest package itself—it did not verify the signature of the application container image referenced inside the Deployment. Because Flux CD does not natively verify container image signatures inside manifests, we will rely on Kyverno to close this gap.
+In the previous section, we verified the signature of our Kubernetes manifest OCI artifact with Flux CD and Kyverno.
+That step verified the manifest package itself, not the application container image referenced inside the Deployment.
+Because Flux CD does not verify container image signatures inside manifests, we will use Kyverno to close this gap.
 
 The [Kyverno policy](./image-signature-verification.yaml) in this section differs slightly from the previous one:
 
@@ -8,7 +10,8 @@ The [Kyverno policy](./image-signature-verification.yaml) in this section differ
 - `.spec.matchImageReferences`: matches every container image (`glob: "*"`) deployed into `apps`.
 - `.spec.variables` & `.spec.validations`: combines `containers`, `initContainers`, and `ephemeralContainers` into `variables.allImages` and verifies them with `verifyImageSignatures`.
 
-We will reuse the [deployment script](./02-deploy.sh) from the previous section to test our layered Kyverno policies. Assuming the policy from Section 04 is still active, only the signed OCI manifest artifact referencing the signed application container image will be admitted:
+We will reuse the [deployment script](./02-deploy.sh) from the previous section to test our layered Kyverno policies.
+With the Section 04 policy still active, only the signed manifest referencing the signed container image will be admitted:
 
 ![allowed-artifacts](./allowed-artifacts.png)
 
