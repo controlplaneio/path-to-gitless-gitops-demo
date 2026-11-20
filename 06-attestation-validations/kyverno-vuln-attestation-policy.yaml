@@ -2,15 +2,18 @@ apiVersion: policies.kyverno.io/v1
 kind: ImageValidatingPolicy
 metadata:
   name: verify-a-simple-app-vuln-attestation
-  namespace: apps
 spec:
   validationActions: [Deny]
 
   validationConfigurations:
+    mutateDigest: false
     required: true
     verifyDigest: true
 
   matchConstraints:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: apps
     resourceRules:
       - apiGroups: [""]
         apiVersions: ["v1"]
@@ -18,7 +21,11 @@ spec:
         resources: ["pods"]
 
   matchImageReferences:
-    - glob: "registry.iximiuz.com/a-simple-app-signed:*"
+    - glob: "*"
+
+  variables:
+    - name: allImages
+      expression: "images.containers + images.initContainers + images.ephemeralContainers"
 
   attestors:
     - name: openbao
@@ -26,24 +33,24 @@ spec:
         key:
           kms: "openbao://gitless-gitops"
         ctlog:
-            insecureIgnoreTlog: true
-            insecureIgnoreSCT: true
-            url: "https://rekor.sigstore.dev" 
+          insecureIgnoreTlog: true
+          insecureIgnoreSCT: true
+          url: "https://rekor.sigstore.dev"
 
   attestations:
-    - name: vulnerabilityScan 
+    - name: vulnerabilityScan
       intoto:
         type: "https://in-toto.io/attestation/vulns/v0.2"
 
   validations:
     - expression: >-
-        images.containers.map(image, verifyAttestationSignatures(image,
+        variables.allImages.map(image, verifyAttestationSignatures(image,
           attestations.vulnerabilityScan, [attestors.openbao])).all(e, e > 0)
       message: "Failed to verify vulnerability attestation signature with OpenBao."
-    
+
     - expression: >-
-        images.containers.map(image, 
-          extractPayload(image, attestations.vulnerabilityScan).predicate.scanner.result.Results.all(res, 
+        variables.allImages.map(image,
+          extractPayload(image, attestations.vulnerabilityScan).predicate.scanner.result.Results.all(res,
             !has(res.Vulnerabilities) || res.Vulnerabilities.all(v, v.Severity != 'CRITICAL')
           )
         ).all(e, e)

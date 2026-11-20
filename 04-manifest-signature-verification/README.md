@@ -40,9 +40,10 @@ bash ./02-cleanup.sh
 
 Kyverno can also verify the signature of the `OCIRepository` artifact at admission time using an `ImageValidatingPolicy` resource. The key parts of our example [policy](./kyverno-verify-oci-artifact-signature.yaml) are:
 
-- `.spec.matchImageReferences`: selects which OCI artifact references to intercept within `OCIRepository` resources.
+- `.spec.matchConstraints`: scopes the policy to `OCIRepository` resources in the `apps` namespace (`namespaceSelector`), leaving `flux-system` untouched.
+- `.spec.matchImageReferences`: matches every OCI artifact (`glob: "*"`) in `apps` so verification cannot be bypassed by renaming the repository.
 - `.spec.attestors`: configures the policy to use Cosign and our OpenBao key for signature verification.
-- `.spec.validations`: defines the CEL validation rules. In our case, we reject malformed `OCIRepository` resources without artifacts and verify that the referenced OCI artifact is signed with our OpenBao key.
+- `.spec.validations`: verifies that the referenced OCI artifact is signed with our OpenBao key.
 
 ```sh
 bash ./03-kyverno-policies.sh         # Apply Kyverno policies first this time

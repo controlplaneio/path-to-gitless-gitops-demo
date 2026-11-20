@@ -4,9 +4,9 @@ In the previous section, we validated the signature of the OCI artifact containi
 
 The [Kyverno policy](./image-signature-verification.yaml) in this section differs slightly from the previous one:
 
-- `.spec.matchConstraints`: targets `Pod` resources instead of `OCIRepository` resources.
-- `.spec.matchImageReferences`: matches the application container image in the OCI registry rather than the manifest artifact.
-- `.spec.validations`: uses the `verifyImageSignatures` CEL function built into `ImageValidatingPolicy`.
+- `.spec.matchConstraints`: targets `Pod` resources in `apps` (`namespaceSelector`); Kyverno automatically generates matching rules for workload controllers like `Deployment`s.
+- `.spec.matchImageReferences`: matches every container image (`glob: "*"`) deployed into `apps`.
+- `.spec.variables` & `.spec.validations`: combines `containers`, `initContainers`, and `ephemeralContainers` into `variables.allImages` and verifies them with `verifyImageSignatures`.
 
 We will reuse the [deployment script](./02-deploy.sh) from the previous section to test our layered Kyverno policies. Assuming the policy from Section 04 is still active, only the signed OCI manifest artifact referencing the signed application container image will be admitted:
 
