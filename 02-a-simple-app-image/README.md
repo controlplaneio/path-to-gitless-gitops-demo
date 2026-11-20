@@ -17,5 +17,5 @@ bash ./02-sign-and-tree-with-cosign.sh
 
 References:
 
-- [Podman Docs - Build command](https://docs.podman.io/en/v5.5.2/markdown/podman-build.1.html)
+- [Podman Docs - Build command](https://docs.podman.io/en/v4.9.3/markdown/podman-build.1.html)
 - [GitHub - Sigstore/Cosign - Sign command](https://github.com/sigstore/cosign/blob/main/doc/cosign_sign.md)

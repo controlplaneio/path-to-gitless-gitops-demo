@@ -12,7 +12,7 @@ Kyverno, on the other hand, integrates natively with OpenBao and verifies signat
 > Its `kyverno-verifier` policy grants only `read` on `transit/keys/gitless-gitops` and `update` on `transit/verify/gitless-gitops/*`.
 > Even if the cluster is compromised, an attacker can only verify signatures—never forge them.
 >
-> **Caching & Availability Trade-off:** Referencing a KMS URI (`openbao://...`) disables Kyverno's in-memory verification cache so key rotations take effect immediately.
+> **Caching & Availability Trade-off:** Using a KMS URI (`openbao://...`) disables Kyverno's verification cache so key rotations take effect immediately.
 > Because every admission calls OpenBao live, control-plane namespaces must be excluded from policies so OpenBao downtime never blocks cluster recovery.
 
 You can execute all of these steps with:

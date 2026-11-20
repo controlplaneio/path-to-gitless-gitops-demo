@@ -4,7 +4,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 set -o xtrace
 
 echo "Cleaning up deployed OCIRepository and Kustomization resources"
-echo "Some deletions might fail depending on which steps you have executed before"
 
 export ARTIFACT_NAME="${MANIFEST_NAME}-unsigned-image-unsigned-manifest"
 kubectl delete -n apps OCIRepository "${ARTIFACT_NAME}" --ignore-not-found=true

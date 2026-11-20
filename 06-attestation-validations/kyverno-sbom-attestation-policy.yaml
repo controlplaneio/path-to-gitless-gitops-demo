@@ -25,7 +25,7 @@ spec:
 
   variables:
     - name: allImages
-      expression: "images.containers + images.initContainers + images.ephemeralContainers"
+      expression: "images.containers + images.initContainers"
 
   attestors:
     - name: openbao

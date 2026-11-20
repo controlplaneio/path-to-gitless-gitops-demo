@@ -5,8 +5,8 @@ An end-to-end journey from basics to a Gitless GitOps implementation.
 ## Architecture & Scope
 
 In this workshop, application manifests are packaged, signed, and reconciled strictly as OCI artifacts with no Git repository in the loop.
-In production, Flux also reconciles policies and tenant `OCIRepository` / `Kustomization` resources from a signed root OCI config artifact (`flux-system/config`).
-Here, Sections `04`–`06` apply those top-level resources with `kubectl apply` as an interactive test harness so you can compare admission and reconciliation side by side.
+In production, Flux reconciles policies and tenant `OCIRepository` / `Kustomization` resources from a signed root config (`flux-system/config`).
+Sections `04`–`06` apply those resources via `kubectl apply` as a test harness to compare admission and reconciliation side by side.
 
 ## Workshop Sections
 

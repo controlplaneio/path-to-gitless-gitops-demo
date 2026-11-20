@@ -6,7 +6,7 @@ set -o xtrace
 URL="${OCI_REGISTRY}/${APP_NAME}-signed:${APP_TAG}"
 DIGEST=$(oras resolve "${URL}")
 
-trivy image --format cosign-vuln --output vuln.json "${URL}"
+trivy image --pkg-types os --scanners vuln --format cosign-vuln --output vuln.json "${URL}"
 
 cosign attest \
   --key openbao://gitless-gitops \

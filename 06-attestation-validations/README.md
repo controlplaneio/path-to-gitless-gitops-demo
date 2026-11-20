@@ -29,34 +29,44 @@ To use it, we provide [a predicate payload](./test_result.json) structured accor
 In a real CI/CD pipeline, your test runner generates this file dynamically.
 Once the predicate file is ready, we can [cryptographically attest and attach it using Cosign](./04-test-attestation.sh).
 
-To see the Kyverno policy in action, run the commands in the following order:
+First, deploy the policy and the unattested workload to watch Kyverno deny admission:
 
 ```sh
 bash ./01-cleanup.sh                            # Clean resources from previous sections
 bash ./02-kyverno-test-attestation-policy.sh    # Deploy Kyverno policy to validate test attestation
 bash ./03-deploy-workload.sh                    # Apply Flux resources for unattested workload
-flux get kustomizations -n apps                 # Reconciliation fails (Kyverno denies admission)
+flux get kustomizations -n apps --watch         # Press Ctrl+C once Kyverno denies admission
+```
+
+Now attach the test attestation and redeploy:
+
+```sh
 bash ./04-test-attestation.sh                   # Attest the workload
 bash ./01-cleanup.sh                            # Clean resources to start with a clean slate
 bash ./03-deploy-workload.sh                    # Apply Flux resources for attested workload
-flux get kustomizations -n apps                 # Reconciliation succeeds
+flux get kustomizations -n apps --watch         # Press Ctrl+C once Ready
 ```
 
 ## SBOM
 
 Next, we will demonstrate how to verify a Software Bill of Materials (SBOM) using attestations. In-toto supports both [SPDX](https://github.com/in-toto/attestation/blob/main/spec/predicates/spdx2.md) and [CycloneDX](https://github.com/in-toto/attestation/blob/main/spec/predicates/cyclonedx.md) formats. In our example, we use SPDX and [run Trivy to generate and attest the SBOM](./06-sbom-attestation.sh).
 
-To see the Kyverno policy in action, run the commands in the following order:
+First, deploy the SBOM policy and the unattested workload:
 
 ```sh
 bash ./01-cleanup.sh                            # Clean resources from previous sections
 bash ./05-kyverno-sbom-attestation-policy.sh    # Deploy SBOM Kyverno policy
 bash ./03-deploy-workload.sh                    # Apply Flux resources for unattested workload
-flux get kustomizations -n apps                 # Reconciliation fails (Kyverno denies admission)
+flux get kustomizations -n apps --watch         # Press Ctrl+C once Kyverno denies admission
+```
+
+Now generate and attach the SPDX SBOM attestation, then redeploy:
+
+```sh
 bash ./06-sbom-attestation.sh                   # Attest the workload
 bash ./01-cleanup.sh                            # Clean resources to start with a clean slate
 bash ./03-deploy-workload.sh                    # Apply Flux resources for attested workload
-flux get kustomizations -n apps                 # Reconciliation succeeds
+flux get kustomizations -n apps --watch         # Press Ctrl+C once Ready
 ```
 
 > [!TIP]
@@ -71,17 +81,22 @@ Most organizations enforce strict policies around which CVEs or severity levels 
 A [Cosign vulnerability scan attestation](https://github.com/sigstore/cosign/blob/v3.1.4/specs/COSIGN_VULN_ATTESTATION_SPEC.md) lets admission controllers verify that an image meets severity thresholds before deployment.
 You simply [generate the vulnerability report](./08-vuln-attestation.sh) with Trivy (`--format cosign-vuln`) and attach it via `cosign attest --type vuln`.
 
-To see the Kyverno policy in action, run the commands in the following order:
+First, deploy the vulnerability policy and the unattested workload:
 
 ```sh
 bash ./01-cleanup.sh                            # Clean resources from previous sections
 bash ./07-kyverno-vuln-attestation-policy.sh    # Deploy Vuln Kyverno policy
 bash ./03-deploy-workload.sh                    # Apply Flux resources for unattested workload
-flux get kustomizations -n apps                 # Reconciliation fails (Kyverno denies admission)
+flux get kustomizations -n apps --watch         # Press Ctrl+C once Kyverno denies admission
+```
+
+Now scan and attest the image, then redeploy:
+
+```sh
 bash ./08-vuln-attestation.sh                   # Attest the workload
 bash ./01-cleanup.sh                            # Clean resources to start with a clean slate
 bash ./03-deploy-workload.sh                    # Apply Flux resources for attested workload
-flux get kustomizations -n apps                 # Reconciliation succeeds
+flux get kustomizations -n apps --watch         # Press Ctrl+C once Ready
 ```
 
 ## Custom

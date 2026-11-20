@@ -26,7 +26,7 @@ Deploy all four candidates and inspect their verification status (both in the CL
 
 ```sh
 bash ./01-deploy.sh
-flux get sources oci -n apps
+flux get sources oci -n apps --watch  # Press Ctrl+C once reconciled
 ```
 
 Once you have confirmed that only the two signed manifest artifacts become `Ready`, clean up the test resources:
@@ -37,7 +37,8 @@ bash ./02-cleanup.sh
 
 > [!TIP]
 >
-> The `.spec.verify` field in an `OCIRepository` resource is optional. To strictly enforce Flux-level signature validation across a cluster, you would need an admission policy that requires `.spec.verify` to be present on all `OCIRepository` resources.
+> The `.spec.verify` field in an `OCIRepository` resource is optional.
+> To enforce Flux-level verification cluster-wide, add an admission policy requiring `.spec.verify` on every `OCIRepository`.
 
 ## Kyverno
 
@@ -51,9 +52,10 @@ Kyverno can also verify the signature of the `OCIRepository` artifact at admissi
 ```sh
 bash ./03-kyverno-policies.sh         # Apply Kyverno policies first this time
 bash ./01-deploy.sh
+flux get sources oci -n apps --watch  # Press Ctrl+C once reconciled
 ```
 
-Inspect the admission rejections in the terminal and check `flux get sources oci -n apps` (or the **Flux UI** tab).
+Inspect the admission rejections in the terminal or in the **Flux UI** tab.
 Only the two signed `OCIRepository` resources exist in the cluster; clean them up when ready:
 
 ```sh
