@@ -1,0 +1,51 @@
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-a-simple-app-spdx-sbom
+spec:
+  validationActions: [Deny]
+
+  validationConfigurations:
+    mutateDigest: false
+    required: true
+    verifyDigest: true
+
+  matchConstraints:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: apps
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+
+  matchImageReferences:
+    - glob: "*"
+
+  variables:
+    - name: allImages
+      expression: "images.containers + images.initContainers"
+
+  attestors:
+    - name: openbao
+      cosign:
+        key:
+          kms: "openbao://gitless-gitops"
+        ctlog:
+          insecureIgnoreTlog: true
+          insecureIgnoreSCT: true
+
+  attestations:
+    - name: spdxSbom
+      intoto:
+        type: "https://spdx.dev/Document"
+
+  validations:
+    - expression: >-
+        variables.allImages.map(image, verifyAttestationSignatures(image,
+          attestations.spdxSbom, [attestors.openbao])).all(e, e > 0)
+      message: "Failed to verify SPDX SBOM attestation signature with OpenBao."
+    - expression: >-
+        variables.allImages.map(image, extractPayload(image, attestations.spdxSbom).predicate.spdxVersion.startsWith('SPDX-2.')).all(e, e)
+      message: "The attached attestation is not a valid SPDX v2 document."

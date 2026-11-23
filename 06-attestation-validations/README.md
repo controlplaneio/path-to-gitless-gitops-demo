@@ -1,0 +1,113 @@
+# 06 - Attestation validations
+
+> [!NOTE]
+>
+> This section assumes the Kyverno policies for validating manifest and image signatures from the previous sections are still deployed.
+
+We have now cryptographically proven that our workloads were created by a trusted party.
+Next, we will use attestations to verify that they meet our quality and security standards before admission.
+
+All of the policies in this section follow the same pattern. Their key components are:
+
+- The `.spec.attestations` block defines the attestation predicate type to verify.
+- The `.spec.validations` block defines custom CEL expressions that inspect specific fields inside the verified attestation payload.
+
+In each exercise below, `03-deploy-workload.sh` submits the signed `OCIRepository` and `Kustomization` to Flux.
+Check `flux get kustomizations -n apps` (or the **Flux UI** tab) after each deploy step.
+Before attesting, reconciliation fails with Kyverno's admission error.
+After attaching the attestation in the registry, reconciliation succeeds without rebuilding the image or manifest.
+
+> [!TIP]
+>
+> In-toto predicate types are identified by URLs. Note that these URLs do not necessarily resolve to live web pages; instead, [they act as unique URI identifiers](https://github.com/in-toto/attestation/blob/main/spec/v1/statement.md) for the predicate schema.
+
+## Test Attestation
+
+The first attestation type we will look at is the test result predicate.
+This is a vetted [in-toto predicate specification](https://in-toto.io/attestation/test-result/v0.1) that Cosign and Kyverno reference by its predicate URI.
+To use it, we provide [a predicate payload](./test_result.json) structured according to the specification.
+In a real CI/CD pipeline, your test runner generates this file dynamically.
+Once the predicate file is ready, we can [cryptographically attest and attach it using Cosign](./04-test-attestation.sh).
+
+First, deploy the policy and the unattested workload to watch Kyverno deny admission:
+
+```sh
+bash ./01-cleanup.sh                            # Clean resources from previous sections
+bash ./02-kyverno-test-attestation-policy.sh    # Deploy Kyverno policy to validate test attestation
+bash ./03-deploy-workload.sh                    # Apply Flux resources for unattested workload
+flux get kustomizations -n apps --watch         # Press Ctrl+C once Kyverno denies admission
+```
+
+Now attach the test attestation and redeploy:
+
+```sh
+bash ./04-test-attestation.sh                   # Attest the workload
+bash ./01-cleanup.sh                            # Clean resources to start with a clean slate
+bash ./03-deploy-workload.sh                    # Apply Flux resources for attested workload
+flux get kustomizations -n apps --watch         # Press Ctrl+C once Ready
+```
+
+## SBOM
+
+Next, we will demonstrate how to verify a Software Bill of Materials (SBOM) using attestations. In-toto supports both [SPDX](https://github.com/in-toto/attestation/blob/main/spec/predicates/spdx2.md) and [CycloneDX](https://github.com/in-toto/attestation/blob/main/spec/predicates/cyclonedx.md) formats. In our example, we use SPDX and [run Trivy to generate and attest the SBOM](./06-sbom-attestation.sh).
+
+First, deploy the SBOM policy and the unattested workload:
+
+```sh
+bash ./01-cleanup.sh                            # Clean resources from previous sections
+bash ./05-kyverno-sbom-attestation-policy.sh    # Deploy SBOM Kyverno policy
+bash ./03-deploy-workload.sh                    # Apply Flux resources for unattested workload
+flux get kustomizations -n apps --watch         # Press Ctrl+C once Kyverno denies admission
+```
+
+Now generate and attach the SPDX SBOM attestation, then redeploy:
+
+```sh
+bash ./06-sbom-attestation.sh                   # Attest the workload
+bash ./01-cleanup.sh                            # Clean resources to start with a clean slate
+bash ./03-deploy-workload.sh                    # Apply Flux resources for attested workload
+flux get kustomizations -n apps --watch         # Press Ctrl+C once Ready
+```
+
+> [!TIP]
+>
+> Inspect the generated SBOM attestation!
+> Instead of merely linking to an external file, the entire SBOM payload is embedded directly inside the attestation statement.
+> You can write CEL expressions in Kyverno to inspect specific packages, versions, or licenses at admission time.
+
+## Vulnerabilities
+
+Most organizations enforce strict policies around which CVEs or severity levels are allowed in production.
+A [Cosign vulnerability scan attestation](https://github.com/sigstore/cosign/blob/v3.1.4/specs/COSIGN_VULN_ATTESTATION_SPEC.md) lets admission controllers verify that an image meets severity thresholds before deployment.
+You simply [generate the vulnerability report](./08-vuln-attestation.sh) with Trivy (`--format cosign-vuln`) and attach it via `cosign attest --type vuln`.
+
+First, deploy the vulnerability policy and the unattested workload:
+
+```sh
+bash ./01-cleanup.sh                            # Clean resources from previous sections
+bash ./07-kyverno-vuln-attestation-policy.sh    # Deploy Vuln Kyverno policy
+bash ./03-deploy-workload.sh                    # Apply Flux resources for unattested workload
+flux get kustomizations -n apps --watch         # Press Ctrl+C once Kyverno denies admission
+```
+
+Now scan and attest the image, then redeploy:
+
+```sh
+bash ./08-vuln-attestation.sh                   # Attest the workload
+bash ./01-cleanup.sh                            # Clean resources to start with a clean slate
+bash ./03-deploy-workload.sh                    # Apply Flux resources for attested workload
+flux get kustomizations -n apps --watch         # Press Ctrl+C once Ready
+```
+
+## Custom
+
+Cosign also supports [custom in-toto predicates](https://github.com/sigstore/cosign/blob/main/doc/cosign_attest.md). This allows you to define your own JSON schemas and cryptographically attest arbitrary metadata for internal platform guardrails. You can even submit general-purpose schemas to become [vetted in-toto predicates](https://github.com/in-toto/attestation/blob/main/docs/new_predicate_guidelines.md). While custom predicates are outside the scope of this playground, they are a powerful capability to keep in mind.
+
+## References
+
+- [In-toto Attestation - Predicates - Spec - SPDX v2](https://github.com/in-toto/attestation/blob/main/spec/predicates/spdx2.md)
+- [In-toto Attestation - Predicates - Spec - Test Result](https://github.com/in-toto/attestation/blob/main/spec/predicates/test-result.md)
+- [Cosign - Vulnerability Attestation Spec](https://github.com/sigstore/cosign/blob/v3.1.4/specs/COSIGN_VULN_ATTESTATION_SPEC.md)
+- [In-toto Attestation - Predicates - Spec - Vulnerabilities v0.2](https://github.com/in-toto/attestation/blob/main/spec/predicates/vulns_02.md)
+- [Kyverno Docs - Policy Types - ImageValidatingPolicy](https://kyverno.io/docs/policy-types/image-validating-policy/)
+- [Trivy Docs - SBOM Scanning](https://trivy.dev/docs/latest/target/sbom/)

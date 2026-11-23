@@ -1,0 +1,54 @@
+---
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-oci-artifact-signature
+spec:
+  validationActions:
+    - Deny
+
+  validationConfigurations:
+    mutateDigest: false
+    required: true
+    verifyDigest: true # Reject tag-only references; require immutable digests
+
+  matchConstraints:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: apps
+    resourceRules:
+      - apiGroups:
+          - source.toolkit.fluxcd.io
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - ocirepositories
+
+  images:
+    - name: ociartifact
+      expression: >-
+        [object.spec.url.replace('oci://', '') +
+          (has(object.spec.ref) && has(object.spec.ref.digest) && object.spec.ref.digest != ''
+            ? '@' + object.spec.ref.digest
+            : ':' + (has(object.spec.ref) && has(object.spec.ref.tag) && object.spec.ref.tag != '' ? object.spec.ref.tag : 'latest'))]
+
+  matchImageReferences:
+    - glob: "*"
+
+  attestors:
+    - name: openbao
+      cosign:
+        key:
+          kms: "openbao://gitless-gitops"
+        ctlog:
+          insecureIgnoreTlog: true
+          insecureIgnoreSCT: true
+
+  validations:
+    - expression: "images.ociartifact.size() > 0"
+      message: "No OCI artifact was found in the OCIRepository."
+    - expression: "images.ociartifact.map(image, verifyImageSignatures(image, [attestors.openbao])).all(e, e > 0)"
+      message: "Image signature verification failed using OpenBao transit key 'gitless-gitops'."

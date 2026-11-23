@@ -1,0 +1,21 @@
+# 02 - Creating a Simple App Image
+
+With the signing key created, we can now build and push a [simple application image](./01-build-and-push.sh).
+This script pushes two copies of the image to separate repositories: one that we [will sign with Cosign](./02-sign-and-tree-with-cosign.sh), and one that we leave unsigned.
+
+You can run this entire section as follows:
+
+```sh
+bash ./01-build-and-push.sh
+bash ./02-sign-and-tree-with-cosign.sh
+```
+
+> [!NOTE]
+>
+> Cosign v3 prints a deprecation notice for `--use-signing-config=false` and `--tlog-upload=false`.
+> Those flags remain the standard way to sign offline without Rekor in Cosign v3.1 until its dedicated offline flag lands.
+
+References:
+
+- [Podman Docs - Build command](https://docs.podman.io/en/v4.9.3/markdown/podman-build.1.html)
+- [GitHub - Sigstore/Cosign - Sign command](https://github.com/sigstore/cosign/blob/main/doc/cosign_sign.md)
